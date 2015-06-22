@@ -2,13 +2,14 @@ package main
 
 import (
 	"fmt"
+	real_pongo2 "github.com/flosch/pongo2"
 	"github.com/kshvakov/vrum-vrum/render"
+	"github.com/kshvakov/vrum-vrum/render/pongo2"
 	"github.com/kshvakov/vrum-vrum/server"
 	"log"
 	"net/http"
 	_ "net/http/pprof"
 	"runtime/debug"
-	"time"
 )
 
 type User struct {
@@ -17,16 +18,12 @@ type User struct {
 
 func init() {
 
-	render.ParseHTMLTemplates("template/", map[string]interface{}{
+	real_pongo2.RegisterFilter("HelloFunc", func(in *real_pongo2.Value, param *real_pongo2.Value) (*real_pongo2.Value, *real_pongo2.Error) {
 
-		"now": func() string {
-
-			return time.Now().Format(time.RFC1123)
-		},
-		"HelloFunc": func(name string) string {
-			return fmt.Sprintf("Hello, %s", name)
-		},
+		return real_pongo2.AsValue(fmt.Sprintf("Hello, %s", in.String())), nil
 	})
+
+	pongo2.ParseHTMLTemplates("template/")
 }
 
 func main() {
@@ -64,7 +61,7 @@ func main() {
 				user = u
 			}
 
-			render.HTML(c, "index.html", user)
+			pongo2.HTML(c, "index.html", map[string]interface{}{"user": user})
 
 			c.Stop()
 		},
@@ -114,7 +111,7 @@ func main() {
 			user = u
 		}
 
-		render.HTML(c, "subdirectory/main.html", user)
+		pongo2.HTML(c, "subdirectory/main.html", map[string]interface{}{"user": user})
 	})
 
 	go func() {
