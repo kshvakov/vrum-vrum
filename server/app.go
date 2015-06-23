@@ -47,6 +47,11 @@ func (a *App) Form(pattern string, handlers ...Handler) {
 	a.router.POST(pattern, handler)
 }
 
+func (a *App) ServeFiles(path string, root http.FileSystem) {
+
+	a.router.ServeFiles(path, root)
+}
+
 func (a *App) Run(addr string) {
 
 	if a.PanicHandler != nil {
