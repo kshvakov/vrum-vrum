@@ -19,3 +19,8 @@ func (r *request) IsPost() bool {
 
 	return r.HTTP.Method == "POST"
 }
+
+func (r *request) Get(key string) string {
+
+	return r.HTTP.URL.Query().Get(key)
+}
