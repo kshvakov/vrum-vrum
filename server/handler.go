@@ -12,7 +12,12 @@ func handler(handlers []Handler) func(http.ResponseWriter, *http.Request, httpro
 
 	return func(rw http.ResponseWriter, req *http.Request, params httprouter.Params) {
 
-		stop := timerStart(req.URL.Path)
+		var stop func()
+
+		if CollectRequestsStat {
+
+			stop = timerStart(req.URL.Path)
+		}
 
 		c := Context{
 			mutex:          &sync.Mutex{},
@@ -27,6 +32,10 @@ func handler(handlers []Handler) func(http.ResponseWriter, *http.Request, httpro
 
 		c.run()
 
-		stop()
+		if CollectRequestsStat {
+
+			stop()
+		}
+
 	}
 }

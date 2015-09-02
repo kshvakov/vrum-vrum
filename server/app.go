@@ -13,6 +13,8 @@ func New() *App {
 	}
 }
 
+var CollectRequestsStat = true
+
 type App struct {
 	router           *httprouter.Router
 	handlers         []Handler
